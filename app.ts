@@ -5,11 +5,17 @@ import * as winston from 'winston'
 import * as expressWinston from 'express-winston'
 import cors from 'cors'
 import CommonRoutesConfig from './api/route/common.routes.config'
-import UsersRoutes from './api/route/users.routes.config'
-import ProtectedUserRoutes from './api/route/protected.user.routes'
+import UnprotectedUserRoutes from './api/route/unprotected.user.routes'
+import UserRoutes from './api/route/user.routes'
 import debug from 'debug'
 import tokenGuard from './api/middleware/token-guard'
 import * as dotenv from 'dotenv';
+import QuestionRoutes from './api/route/question.routes'
+import AnswerRoutes from './api/route/answer.routes'
+import apicache from 'apicache'
+import VoteRoutes from './api/route/vote.routes'
+import SubscriptionRoutes from './api/route/subscription.routes'
+
 
 dotenv.config();
 const app: express.Application = express();
@@ -17,6 +23,7 @@ const server: http.Server = http.createServer(app);
 const port: Number = 3000;
 const routes: Array<CommonRoutesConfig> = [];
 const debugLog: debug.IDebugger = debug('app');
+let cache = apicache.middleware
 
 // here we are adding middleware to parse all incoming requests as JSON 
 app.use(bodyparser.json());
@@ -35,10 +42,11 @@ app.use(expressWinston.logger({
         winston.format.json()
     )
 }));
+// app.use(cache('5 minutes'))
 
 // here we are adding the UserRoutes to our array,
 // after sending the Express.js application object to have the routes added to our app!
-routes.push(new UsersRoutes(app));
+routes.push(new UnprotectedUserRoutes(app));
 
 // here we are configuring the expressWinston error-logging middleware,
 // which doesn't *handle* errors per se, but does *log* them
@@ -60,7 +68,11 @@ app.get('/', (req: express.Request, res: express.Response) => {
 
 app.use(tokenGuard())
 //...register protected router after injecting the token guard
-routes.push(new ProtectedUserRoutes(app));
+routes.push(new UserRoutes(app))
+routes.push(new QuestionRoutes(app))
+routes.push(new AnswerRoutes(app))
+routes.push(new VoteRoutes(app))
+routes.push(new SubscriptionRoutes(app))
 
 server.listen(port, () => {
     debugLog('Server running at http://localhost:${port}');

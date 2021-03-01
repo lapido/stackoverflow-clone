@@ -1,11 +1,12 @@
 import {UserDto} from "../dto/user.dto";
 import * as bcrypt from 'bcrypt'
-import {User} from '../model/user.model'
+import {User, UserModel} from '../model/user.model'
 import * as jwt from 'jsonwebtoken'
 import debug from 'debug';
 import ResponseCode from '../enum/response.code'
 import JwtPayload from "./interface/jwt.payload";
 import ConfigProperty from "../../config/env.config";
+import { UserResponseDto } from "../dto/response/user-response.dto";
 
 const log: debug.IDebugger = debug('app:users-service');
 
@@ -41,6 +42,9 @@ class UserService {
                     websiteLink: userDto.websiteLink,
                     password: hash
                 })
+                .then(user => {
+                    return this.buildDto(user)
+                })
             })
             .catch(e => {
                 log('Error: ', e)
@@ -50,9 +54,6 @@ class UserService {
 
     async update(id: number, userDto: UserDto) {
         const user = await User.findByPk(id)
-                            .then(user => {
-                                return user;
-                            })
                             .catch((e) => {
                                 log("Error: ", e)
                                 return ResponseCode.SYSTEM_ERROR
@@ -88,19 +89,36 @@ class UserService {
     }
 
     async getUserById(id: number) {
-        const user = await User.findByPk(id);
-        //TODO:throw some exceptions
+        const user = await User.findByPk(id)
+                                .then (data => {
+                                    if (data) {
+                                        this.buildDto(data)
+                                    }
+                                })
+                                .catch(e => {
+                                    log('Error: ', e)
+                                    return ResponseCode.SYSTEM_ERROR
+                                })
         if (user == null) {
-            log('User not found')
+            return ResponseCode.USER_DOES_NOT_EXISTS
         }
 
-        return user;
+        return user
     }
 
     async getUserByEmail(email: string) {
         const user = await User.findOne({ where: {email: email}})
+                                .then (data => {
+                                    if (data) {
+                                        this.buildDto(data)
+                                    }
+                                })
+                                .catch(e => {
+                                    log('Error: ', e)
+                                    return ResponseCode.SYSTEM_ERROR
+                                })
         if (user == null) {
-            throw (ResponseCode.USER_DOES_NOT_EXISTS)
+            return ResponseCode.USER_DOES_NOT_EXISTS
         }
 
         return user
@@ -137,17 +155,31 @@ class UserService {
 
     async verifyToken(token: string) {
         return new Promise((resolve, reject) => {
-            // this.getUserByEmail(payload.email)
             jwt.verify(token, this._jwtSecret, (err, decoded) => {
                 if (err) {
                     resolve(false)
                     return
                 }
-
+                console.log('true')
                 resolve(true)
                 return
             })
         }) as Promise<boolean>
+    }
+
+    private buildDto(user: UserModel) {
+        return {
+            id: user.id,
+            displayName: user.displayName,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            githubUsername: user.githubUsername,
+            location: user.location,
+            title: user.title,
+            twitterUsername: user.twitterUsername,
+            websiteLink: user.websiteLink
+        }
     }
 }
 

@@ -1,24 +1,30 @@
 import * as Sequelize  from "sequelize"
 import dbConnection from '../../config/db.connection'
-import { QuestionDto } from '../dto/question.dto'
-import { Answer } from "./answer.model"
-import { Subscription } from "./subscription.model"
+import { AnswerDto } from "../dto/answer.dto"
 import { User } from './user.model'
+import { Question } from './question.model'
+import { Vote } from "./vote.model"
 
-interface QuestionModel extends Sequelize.Model<QuestionModel, QuestionDto> {
+interface AnswerModel extends Sequelize.Model<AnswerModel, AnswerDto> {
     id: number
     userId: number
-    title: string
+    questionId: number
     body: string
 }
 
-export const Question = dbConnection.getSequelize().define<QuestionModel, QuestionDto>('question', {
+export const Answer = dbConnection.getSequelize().define<AnswerModel, AnswerDto>('answer', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
-    title: Sequelize.STRING,
+    questionId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: Question,
+          key: 'id'
+        }
+    },
     body: Sequelize.STRING,
     userId: {
         type: Sequelize.INTEGER,

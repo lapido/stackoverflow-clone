@@ -1,4 +1,4 @@
-export interface AnswerDto{
+export interface AnswerDto {
     id?: number
     questionId: number
     userId: number

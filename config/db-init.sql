@@ -26,7 +26,6 @@ CREATE TABLE IF NOT EXISTS Question (
     FOREIGN KEY (user_id) REFERENCES User(id)
 );
 
-
 CREATE TABLE IF NOT EXISTS Answer (
     id INT AUTO_INCREMENT PRIMARY KEY,
     question_id INT NOT NULL,
@@ -35,13 +34,6 @@ CREATE TABLE IF NOT EXISTS Answer (
     timestamp_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     timestamp_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES User(id),
-    FOREIGN KEY (question_id) REFERENCES Question(id)
-);
-
-CREATE TABLE IF NOT EXISTS QuestionTag (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    question_id INT NOT NULL,
-    tag VARCHAR(20) NOT NULL,
     FOREIGN KEY (question_id) REFERENCES Question(id)
 );
 
@@ -54,10 +46,11 @@ CREATE TABLE IF NOT EXISTS Subscription (
     FOREIGN KEY (question_id) REFERENCES Question(id)
 );
 
-CREATE TABLE IF NOT EXISTS Reaction (
+CREATE TABLE IF NOT EXISTS Vote (
     id INT AUTO_INCREMENT PRIMARY KEY,
     answer_id INT NOT NULL,
     user_id INT NOT NULL,
+    vote_type VARCHAR(10) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES User(id),
     FOREIGN KEY (answer_id) REFERENCES Answer(id)
 );
