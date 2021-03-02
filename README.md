@@ -20,7 +20,7 @@ Build everything (outputs will live in `dist/`-directory)
 
     npm run build
 
-Start development server with hot reloading (open `http://0.0.0.0:8080/`)
+Start development server with hot reloading (open `http://localhost:8080/`)
 
     npm start
 
@@ -29,5 +29,4 @@ Start development server with hot reloading (open `http://0.0.0.0:8080/`)
 
 ## Improvement
 Below are the important improvements to consider
-* Implement fire and forget approach to send notification to users who subscribed to be notified when a question is answered
-* Implement a message broker using a pub sub approach for the subscription notification feature. This will be higly considered for scalability reasons
+* Implement a message broker using a pub sub approach for the subscription notification feature. This will be higly considered for scalability and reliability reasons

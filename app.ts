@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express'
 import * as http from 'http'
 import * as bodyparser from 'body-parser'
@@ -9,7 +12,6 @@ import UnprotectedUserRoutes from './api/route/unprotected.user.routes'
 import UserRoutes from './api/route/user.routes'
 import debug from 'debug'
 import tokenGuard from './api/middleware/token-guard'
-import * as dotenv from 'dotenv';
 import QuestionRoutes from './api/route/question.routes'
 import AnswerRoutes from './api/route/answer.routes'
 import apicache from 'apicache'
@@ -17,7 +19,6 @@ import VoteRoutes from './api/route/vote.routes'
 import SubscriptionRoutes from './api/route/subscription.routes'
 
 
-dotenv.config();
 const app: express.Application = express();
 const server: http.Server = http.createServer(app);
 const port: Number = 3000;
