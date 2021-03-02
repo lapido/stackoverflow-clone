@@ -8,6 +8,10 @@ import VoteService from "../../api/service/vote.service"
 
 jest.mock('../../api/model/vote.model')
 
+afterEach(() => {
+  jest.clearAllMocks()
+})
+jest.setTimeout(30000);
 test('test user vote', async() => {
     const answerId: number = faker.random.number()
     const userId: number = faker.random.number()
@@ -30,6 +34,12 @@ test('test user vote', async() => {
     jest.spyOn(Answer, 'findByPk').mockResolvedValueOnce(answerModel)
     
     jest.spyOn(Vote, 'findOne').mockResolvedValueOnce(null)
+
+    const vote = {id: faker.random.number()}
+    const voteModel = new Promise<any>((resolve, reject) => {
+      resolve(vote);
+    });
+    jest.spyOn(Vote, 'create').mockResolvedValueOnce(voteModel)
 
     await VoteService.vote(answerId, voteDto)
     expect(Vote.findOne).toHaveBeenCalledTimes(1)

@@ -3,13 +3,14 @@ import { QuestionDto } from '../../api/dto/question.dto'
 import { Question } from '../../api/model/question.model'
 import { User } from '../../api/model/user.model'
 import QuestionService from '../../api/service/question.service'
+import * as PaginationUtil from '../../api/service/util/pagination.util'
 
 jest.mock('../../api/model/question.model')
 
 afterEach(() => {
     jest.clearAllMocks()
   })
-
+jest.setTimeout(30000);
 test('should create question', async () => {
     const title = faker.lorem.lines()
     const body = faker.lorem.paragraph()
@@ -67,11 +68,8 @@ test('Should not create question when input (userId) is invalid', async() => {
 })
 
 test('test getQuestionsbyUser', async() => {
-    const mock = jest.fn();
-    let pagingDataMock = mock("getPagingData");
-
-    pagingDataMock.mockResolvedValueOnce({totalItemCount: 9, data: [], 
-        totalPages: 1, currentPage: 1})
+    jest.spyOn(PaginationUtil, 'getPagingData').mockReturnValue({totalItemCount: 9, data: [], 
+        totalPages: 1, currentPage: 1});
 
     const userId = faker.random.number()
     const page = faker.random.number()
@@ -90,16 +88,13 @@ test('test getQuestionsbyUser', async() => {
     jest.spyOn(Question, 'findAndCountAll').mockResolvedValueOnce(findAllModel)
 
     await QuestionService.getQuestionsByUser(userId, page, size)
-    expect(pagingDataMock).toHaveBeenCalledTimes(1)
+    expect(PaginationUtil.getPagingData).toHaveBeenCalledTimes(1)
     expect(Question.findAndCountAll).toHaveBeenCalledTimes(1)
 })
 
 test('test getQuestionsbyUser when user does not exist', async() => {
-    const mock = jest.fn();
-    let pagingDataMock = mock("getPagingData");
-
-    pagingDataMock.mockResolvedValueOnce({totalItemCount: 9, data: [], 
-        totalPages: 1, currentPage: 1})
+    jest.spyOn(PaginationUtil, 'getPagingData').mockReturnValue({totalItemCount: 9, data: [], 
+        totalPages: 1, currentPage: 1});
 
     const userId = faker.random.number()
     const page = faker.random.number()
@@ -108,43 +103,42 @@ test('test getQuestionsbyUser when user does not exist', async() => {
     jest.spyOn(User, 'findByPk').mockResolvedValueOnce(null)
 
     await QuestionService.getQuestionsByUser(userId, page, size)
-    expect(pagingDataMock).toHaveBeenCalledTimes(0)
+    expect(PaginationUtil.getPagingData).toHaveBeenCalledTimes(0)
     expect(Question.findAndCountAll).toHaveBeenCalledTimes(0)
 })
 
 test('test getQuestionsbyUser page input <= 0', async() => {
-    const mock = jest.fn();
-    let pagingDataMock = mock("getPagingData");
+    
+    jest.spyOn(PaginationUtil, 'getPagingData').mockReturnValue({totalItemCount: 9, data: [], 
+        totalPages: 1, currentPage: 1});
 
     const userId = faker.random.number()
     const page = 0
     const size = faker.random.number()
 
     await QuestionService.getQuestionsByUser(userId, page, size)
-    expect(pagingDataMock).toHaveBeenCalledTimes(0)
+    expect(PaginationUtil.getPagingData).toHaveBeenCalledTimes(0)
     expect(Question.findAndCountAll).toHaveBeenCalledTimes(0)
 })
 
 test('test getQuestionsbyUser size input <= 0', async() => {
-    const mock = jest.fn();
-    let pagingDataMock = mock("getPagingData");
+    jest.spyOn(PaginationUtil, 'getPagingData').mockReturnValue({totalItemCount: 9, data: [], 
+        totalPages: 1, currentPage: 1});
 
     const userId = faker.random.number()
     const page = faker.random.number()
     const size = 0
 
     await QuestionService.getQuestionsByUser(userId, page, size)
-    expect(pagingDataMock).toHaveBeenCalledTimes(0)
+    expect(PaginationUtil.getPagingData).toHaveBeenCalledTimes(0)
     expect(Question.findAndCountAll).toHaveBeenCalledTimes(0)
 })
 
 
 test('test getAllQuestions', async() => {
-    const mock = jest.fn();
-    let pagingDataMock = mock("getPagingData");
+    jest.spyOn(PaginationUtil, 'getPagingData').mockReturnValue({totalItemCount: 9, data: [], 
+        totalPages: 1, currentPage: 1});
 
-    pagingDataMock.mockResolvedValueOnce({totalItemCount: 9, data: [], 
-        totalPages: 1, currentPage: 1})
     const page = faker.random.number()
     const size = faker.random.number()
 
@@ -155,16 +149,14 @@ test('test getAllQuestions', async() => {
     jest.spyOn(Question, 'findAndCountAll').mockResolvedValueOnce(findAllModel)
 
     await QuestionService.getQuestions(page, size)
-    expect(pagingDataMock).toHaveBeenCalledTimes(1)
+    expect(PaginationUtil.getPagingData).toHaveBeenCalledTimes(1)
     expect(Question.findAndCountAll).toHaveBeenCalledTimes(1)
 })
 
 test('test getAllQuestions when page is <= 0', async() => {
-    const mock = jest.fn();
-    let pagingDataMock = mock("getPagingData");
+    jest.spyOn(PaginationUtil, 'getPagingData').mockReturnValue({totalItemCount: 9, data: [], 
+        totalPages: 1, currentPage: 1});
 
-    pagingDataMock.mockResolvedValueOnce({totalItemCount: 9, data: [], 
-        totalPages: 1, currentPage: 1})
     const page = 0
     const size = faker.random.number()
 
@@ -175,16 +167,14 @@ test('test getAllQuestions when page is <= 0', async() => {
     jest.spyOn(Question, 'findAndCountAll').mockResolvedValueOnce(findAllModel)
 
     await QuestionService.getQuestions(page, size)
-    expect(pagingDataMock).toHaveBeenCalledTimes(0)
+    expect(PaginationUtil.getPagingData).toHaveBeenCalledTimes(0)
     expect(Question.findAndCountAll).toHaveBeenCalledTimes(0)
 })
 
 test('test getAllQuestions when size is <= 0', async() => {
-    const mock = jest.fn();
-    let pagingDataMock = mock("getPagingData");
+    jest.spyOn(PaginationUtil, 'getPagingData').mockReturnValue({totalItemCount: 9, data: [], 
+        totalPages: 1, currentPage: 1});
 
-    pagingDataMock.mockResolvedValueOnce({totalItemCount: 9, data: [], 
-        totalPages: 1, currentPage: 1})
     const page = faker.random.number()
     const size = 0
 
@@ -195,6 +185,6 @@ test('test getAllQuestions when size is <= 0', async() => {
     jest.spyOn(Question, 'findAndCountAll').mockResolvedValueOnce(findAllModel)
 
     await QuestionService.getQuestions(page, size)
-    expect(pagingDataMock).toHaveBeenCalledTimes(0)
+    expect(PaginationUtil.getPagingData).toHaveBeenCalledTimes(0)
     expect(Question.findAndCountAll).toHaveBeenCalledTimes(0)
 })

@@ -4,13 +4,14 @@ import { Answer } from '../../api/model/answer.model'
 import { Question } from '../../api/model/question.model'
 import { User } from '../../api/model/user.model'
 import AnswerService from '../../api/service/answer.service'
+import * as PaginationUtil from '../../api/service/util/pagination.util'
 
 jest.mock('../../api/model/answer.model')
 
 afterEach(() => {
     jest.clearAllMocks()
   })
-
+jest.setTimeout(30000);
 
 test('should create answer', async () => {
     const body = faker.lorem.paragraph()
@@ -34,10 +35,15 @@ test('should create answer', async () => {
         resolve(question);
       });
     jest.spyOn(Question, 'findByPk').mockResolvedValueOnce(questionModel)
-    
     jest.spyOn(Answer, 'findOne').mockResolvedValueOnce(null)
 
-    const answer = await AnswerService.createAnswer(questionId, answerDto)
+    const answer: any = {id: faker.random.number()}
+    const answerModel = new Promise<any>((resolve, reject) => {
+      resolve(answerModel);
+    });
+    jest.spyOn(Answer, 'create').mockRejectedValueOnce(answerModel)
+
+    await AnswerService.createAnswer(questionId, answerDto)
     expect(Answer.findOne).toHaveBeenCalledTimes(1)
     expect(Answer.create).toHaveBeenCalledTimes(1)
     expect(Answer.update).toHaveBeenCalledTimes(0)
@@ -130,12 +136,10 @@ test('test answer submission when question does not exist', async() => {
 })
 
 test('test get answers by question', async() => {
-    const mock = jest.fn();
-    let pagingDataMock = mock("getPagingData");
 
-    pagingDataMock.mockResolvedValueOnce({totalItemCount: 9, data: [], 
-        totalPages: 1, currentPage: 1})
-
+  jest.spyOn(PaginationUtil, 'getPagingData').mockReturnValue({totalItemCount: 9, data: [], 
+    totalPages: 1, currentPage: 1});
+  
     const questionId = faker.random.number()
     const page = faker.random.number()
     const size = faker.random.number()
@@ -153,21 +157,22 @@ test('test get answers by question', async() => {
     jest.spyOn(Answer, 'findAndCountAll').mockResolvedValueOnce(findAllModel)
 
     await AnswerService.getAnswersByQuestion(questionId, page, size)
-    expect(pagingDataMock).toHaveBeenCalledTimes(1)
+    expect(PaginationUtil.getPagingData).toHaveBeenCalledTimes(1)
     expect(Answer.findAndCountAll).toHaveBeenCalledTimes(1)
 })
 
 test('test get answers by question when question does not exist', async() => {
-    const mock = jest.fn();
+    jest.spyOn(PaginationUtil, 'getPagingData').mockReturnValue({totalItemCount: 9, data: [], 
+    totalPages: 1, currentPage: 1});
     const questionId = faker.random.number()
     const page = faker.random.number()
     const size = faker.random.number()
 
     jest.spyOn(Question, 'findByPk').mockResolvedValueOnce(null)
     
-    let pagingDataMock = mock("getPagingData");
+    
 
     await AnswerService.getAnswersByQuestion(questionId, page, size)
-    expect(pagingDataMock).toHaveBeenCalledTimes(0)
+    expect(PaginationUtil.getPagingData).toHaveBeenCalledTimes(0)
     expect(Answer.findAndCountAll).toHaveBeenCalledTimes(0)
 })

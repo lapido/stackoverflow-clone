@@ -10,7 +10,7 @@ jest.mock('../../api/model/user.model')
 afterEach(() => {
     jest.clearAllMocks()
   })
-
+jest.setTimeout(30000);
 test('should register user', async () => {
     const displayName = faker.internet.userName()
     const firstName = faker.name.firstName()
