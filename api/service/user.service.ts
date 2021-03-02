@@ -6,8 +6,11 @@ import debug from 'debug';
 import ResponseCode from '../enum/response.code'
 import JwtPayload from "./interface/jwt.payload";
 import ConfigProperty from "../../config/env.config";
-import { UserResponseDto } from "../dto/response/user-response.dto";
 
+/*
+   The UserService exposes methods that effect changes on the user model,
+   and also includes method to login a user and fetch a user by both id and email
+*/
 const log: debug.IDebugger = debug('app:users-service');
 
 class UserService {
@@ -16,6 +19,11 @@ class UserService {
     private readonly _jwtExpiresIn = ConfigProperty.JwtExpiresIn
     private static instance: UserService;
 
+    /*
+        the getInstance ensures that only one instance of UserServicce
+        would persist in the memory during the application's life cycle
+        by restricts instantiation of this class to just one object.
+    */
     static getInstance(): UserService {
         if (!UserService.instance) {
             UserService.instance = new UserService();
@@ -23,11 +31,21 @@ class UserService {
         return UserService.instance;
     }
 
+    /**
+         * Creates a new user
+         *
+         * @param UserDto - has the user information to be stored
+         * @returns a user object if operation is successful, while
+         * it returns an error response object if operation fails
+         *
+     */
     async register(userDto: UserDto) {
         const user = await User.findOne({where: {email: userDto.email}})
         if (user != null) {
             return ResponseCode.USER_ALREADY_EXISTS
         }
+
+        //password is hashed using bcrypt
         return await bcrypt.hash(userDto.password, this._saltRounds)
             .then(hash => {
                 return User.create({
@@ -52,6 +70,15 @@ class UserService {
             })
     }
 
+     /**
+         * Updates user information
+         *
+         * @param UserDto - has the user information to be stored
+         * @param id - userId to be updated
+         * @returns a user object if operation is successful, while
+         * it returns an error response object if operation fails
+         *
+     */
     async update(id: number, userDto: UserDto) {
         const user = await User.findByPk(id)
                             .catch((e) => {
@@ -77,9 +104,7 @@ class UserService {
                 if (num[0] === 1) {
                     return ResponseCode.USER_RECORD_UPDATED
                 }
-                else {
-                    return ResponseCode.UPDATE_FAILED
-                }
+                return ResponseCode.UPDATE_FAILED
             })
             .catch(err => {
                 log('Error: ', err)
@@ -88,11 +113,20 @@ class UserService {
 
     }
 
+
+    /**
+     * Finds and returns a user model
+     *
+     * @param id - id of user to find and return
+     * @returns a user object if operation is successful, while
+     * it returns an error response object if operation fails
+     *
+    */
     async getUserById(id: number) {
         const user = await User.findByPk(id)
                                 .then (data => {
                                     if (data) {
-                                        this.buildDto(data)
+                                        return this.buildDto(data)
                                     }
                                 })
                                 .catch(e => {
@@ -106,11 +140,19 @@ class UserService {
         return user
     }
 
+     /**
+         * Find and returns a user model
+         *
+         * @param email - email of the user to find and return
+         * @returns a user object if operation is successful, while
+         * it returns an error response object if operation fails
+         *
+     */
     async getUserByEmail(email: string) {
         const user = await User.findOne({ where: {email: email}})
                                 .then (data => {
                                     if (data) {
-                                        this.buildDto(data)
+                                        return this.buildDto(data)
                                     }
                                 })
                                 .catch(e => {
@@ -124,12 +166,22 @@ class UserService {
         return user
     }
 
+
+     /**
+         * Authenticate a user
+         *
+         * @param email - valid email of the user to be authenticated
+         * @param password - plain password of the user to be authenticated
+         * @returns a jwt token with the user's displayname and email
+         *
+     */
     async login(email: string, password: string) {
-        const user = await User.findOne({where: { email: email }});
+        const user = await User.findOne({where: { email: email }})
+        
         if (user == null) {
             return ResponseCode.USER_DOES_NOT_EXISTS
         }
-        console.log(password, user.password)
+        
         const validPassword = await bcrypt.compare(password, user.password)
         if (validPassword) {
             const payload: JwtPayload = {
@@ -137,22 +189,39 @@ class UserService {
                 displayName: user.displayName
             }
             
-            const token = jwt.sign(payload, this._jwtSecret, {
-                expiresIn: this._jwtExpiresIn
-            })
+            const token = this.generateToken(payload)
             
             return {
                 email: user.email,
                 accessToken: token,
-                displayName: user.displayName,
-                expiresIn: 12222 //TODO: research
+                displayName: user.displayName
             }
         }
         else {
-            throw (ResponseCode.LOGIN_INVALID)
+            return ResponseCode.LOGIN_INVALID
         }
     }
 
+    /**
+     * Generates a jwt token
+     *
+     * @param JwtPayload - has the user information to be stored in the token
+     * @returns a signed token
+     *
+    */
+    generateToken(payload: JwtPayload) {
+        return jwt.sign(payload, this._jwtSecret, {
+            expiresIn: this._jwtExpiresIn
+        })
+    }
+
+    /**
+     * Verifies a jwt token
+     *
+     * @param token - token to be verified
+     * @returns a boolean: true - token is valid, or false - token is invalid
+     *
+    */
     async verifyToken(token: string) {
         return new Promise((resolve, reject) => {
             jwt.verify(token, this._jwtSecret, (err, decoded) => {
@@ -160,14 +229,13 @@ class UserService {
                     resolve(false)
                     return
                 }
-                console.log('true')
                 resolve(true)
                 return
             })
         }) as Promise<boolean>
     }
 
-    private buildDto(user: UserModel) {
+    buildDto(user: UserModel) {
         return {
             id: user.id,
             displayName: user.displayName,

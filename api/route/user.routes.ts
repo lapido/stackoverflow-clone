@@ -9,9 +9,10 @@ export default class UserRoutes extends CommonRoutesConfig {
     }
 
     configureRoutes() {
-        this.app.put('/v1/users/:id', UserValidation['forUserDto'], UserController.updateUser);
-        this.app.get('/v1/users/:id', UserController.getUserById)
+        this.app.put('/v1/users/:id', UserValidation['forUserUpdate'], UserController.updateUser);
         this.app.get('/v1/users/email', UserController.getUserByEmail)
+        this.app.get('/v1/users/:id', UserController.getUserById)
+        
         
         return this.app;
     }

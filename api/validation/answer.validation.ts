@@ -1,5 +1,6 @@
 import { check } from 'express-validator'
 
+//Client's input is validated before hitting the controller layer
 const AnswerValidation = {
     forAnswerDto: [
         check('body')

@@ -1,7 +1,8 @@
 import * as Sequelize  from "sequelize"
 import dbConnection from "../../config/db.connection"
 import { Question } from "./question.model"
-import { User } from "./user.model"
+import { User, UserModel } from "./user.model"
+import {BelongsToGetAssociationMixin} from "sequelize"
 
 export const Subscription = dbConnection.getSequelize().define('subscription', {
     id: {

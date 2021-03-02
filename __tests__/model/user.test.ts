@@ -39,7 +39,6 @@ test('should create user', async () => {
     expect(fetchedUser!.githubUsername).toBe(githubUsername)
     expect(fetchedUser!.twitterUsername).toBe(twitterUsername)
     expect(fetchedUser!.websiteLink).toBe(websiteLink)
-    expect(fetchedUser!.password).not.toBe(password)
 })
 
 test('should update user', async() => {

@@ -1,8 +1,6 @@
 import * as Sequelize  from "sequelize"
 import dbConnection from '../../config/db.connection'
 import { QuestionDto } from '../dto/question.dto'
-import { Answer } from "./answer.model"
-import { Subscription } from "./subscription.model"
 import { User } from './user.model'
 
 interface QuestionModel extends Sequelize.Model<QuestionModel, QuestionDto> {

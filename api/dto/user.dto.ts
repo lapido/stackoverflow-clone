@@ -9,6 +9,6 @@ export interface UserDto {
     websiteLink: string;
     twitterUsername: string;
     githubUsername: string;
-    password: string;
+    password?: string;
     confirmPasword?: string;
 }

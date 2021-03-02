@@ -32,7 +32,9 @@
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.2.5",
     "nodemailer": "^6.5.0",
+    "reflect-metadata": "^0.1.13",
     "sequelize": "^6.5.0",
+    "sequelize-typescript": "^2.1.0",
     "shortid": "^2.2.16",
     "tedious": "^11.0.4",
     "winston": "^3.3.3"
