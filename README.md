@@ -24,6 +24,9 @@ Start development server with hot reloading (open `http://0.0.0.0:8080/`)
 
     npm start
 
+## Database Design
+![plot](./database-model.PNG)
+
 ## Improvement
 Below are the important improvements to consider
 * Implement fire and forget approach to send notification to users who subscribed to be notified when a question is answered
