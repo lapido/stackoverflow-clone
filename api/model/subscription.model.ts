@@ -2,9 +2,22 @@ import * as Sequelize  from "sequelize"
 import dbConnection from "../../config/db.connection"
 import { Question } from "./question.model"
 import { User, UserModel } from "./user.model"
-import {BelongsToGetAssociationMixin} from "sequelize"
 
-export const Subscription = dbConnection.getSequelize().define('subscription', {
+interface SubscriptionDto {
+    id?: number
+    questionId: number
+    userId: number
+    status: string
+}
+
+interface SubscriptionModel extends Sequelize.Model<SubscriptionModel, SubscriptionDto> {
+    id: number
+    questionId: number
+    userId: number
+    status: string
+}
+
+export const Subscription = dbConnection.getSequelize().define<SubscriptionModel, SubscriptionDto>('subscription', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,

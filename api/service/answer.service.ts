@@ -5,6 +5,8 @@ import debug from 'debug';
 import { Question } from "../model/question.model";
 import { Answer } from "../model/answer.model";
 import { getPagination, getPagingData } from "./util/pagination.util";
+import { Subscription } from "../model/subscription.model";
+import SubscriptionService from "./subscription.service";
 
 const log: debug.IDebugger = debug('app:answer-service');
 
@@ -70,6 +72,10 @@ class AnswerService {
                 questionId: questionId,
                 body: answerDto.body
             })
+            .then(async d => {
+                await SubscriptionService.notify(questionId)
+                return d
+            })
             .catch(e => {
                 log('Error: ', e)
                 return ResponseCode.SYSTEM_ERROR
@@ -128,8 +134,6 @@ class AnswerService {
                 return ResponseCode.SYSTEM_ERROR
             })
     }
-
-
 
 }
 

@@ -1,10 +1,10 @@
 import ResponseCode from "../enum/response.code"
 import { Question } from "../model/question.model"
 import { User } from "../model/user.model"
-import questionService from "./question.service"
-
 import debug from 'debug';
 import { Subscription } from "../model/subscription.model";
+import EmailService from "./email.service";
+
 const log: debug.IDebugger = debug('app:subscription-service');
 
 class SubscriptionService {
@@ -74,8 +74,35 @@ class SubscriptionService {
         })
     }
 
-    async notify(questionId: number){
+    //gets all users who have subscribed to the question
+    async getAllUsersSubscribedForAQuestion(questionId: number) {
+        const usersEmail: string[] = []
+        return await Subscription.findAll({where: {questionId: questionId}})
+            .then(rows => {
+                rows.forEach(async function(row) {
+                    const userId = row.userId
+                    const user = await User.findByPk(userId)
+                    if (user) {
+                        usersEmail.push(user?.email)
+                    }
+                })
+                return usersEmail;
+            })
+            .catch(e => {
+                log('Error: ', e)
+                throw e
+            })
+    }
 
+    //sends out notification to users who have subscribed
+    async notify(questionId: number){
+        const usersEmails = await this.getAllUsersSubscribedForAQuestion(questionId)
+        return await usersEmails.forEach(async function(email) {
+            const to = email
+            const subject = 'Stackoverflow - Notification'
+            const body = 'The question you subscribed for has been answered'
+            await EmailService.sendMail(to, subject, body)
+        })
     }
 }
 

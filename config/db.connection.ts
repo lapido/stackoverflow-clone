@@ -2,6 +2,7 @@ import { Sequelize } from "sequelize";
 import debug from 'debug';
 import {readFileSync} from 'fs'
 import {Promise  as DPromise} from "bluebird";
+import ConfigProperty from "../config/env.config";
 
 const path = require('path')
 
@@ -9,9 +10,9 @@ const log: debug.IDebugger = debug('app:db-connection');
 
 class DBConnection {
     private static instance: DBConnection;
-    private readonly dbName = 'stackoverflow_clone'
-    private readonly username = 'root'
-    private readonly password = 'Password12'
+    private readonly dbName = ConfigProperty.Db_Name
+    private readonly username = ConfigProperty.Db_Username
+    private readonly password = ConfigProperty.Db_Password
     private readonly sequelize : Sequelize;
 
     constructor() {
@@ -44,6 +45,7 @@ class DBConnection {
         return this.sequelize;
     }
 
+    //loads the script and apply it to the database
     async dbSetup () {
         let promises: any[] = [];
         let filePath = path.resolve(__dirname, './db-init.sql');

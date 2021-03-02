@@ -44,24 +44,7 @@ export const User = dbConnection.getSequelize().define<UserModel, UserDto>('user
     timestamps: false
 })
 
-User.hasMany(Question, {foreignKey: {name: "userId", allowNull: false}, sourceKey: "id"})
-Question.belongsTo(User, {foreignKey: {name: "userId", allowNull: false}, targetKey: "id"})
-
 User.hasMany(Subscription, {foreignKey: {name: "userId", allowNull: false}, sourceKey: "id"})
 Subscription.belongsTo(User, {foreignKey: {name: "userId", allowNull: false}, targetKey: "id"})
 
-User.hasMany(Answer, {foreignKey: {name: "userId", allowNull: false}, sourceKey: "id"})
-Answer.belongsTo(User, {foreignKey: {name: "userId", allowNull: false}, targetKey: "id"})
-
-User.hasMany(Vote, {foreignKey: {name: "userId", allowNull: false}, sourceKey: "id"})
-Vote.belongsTo(User, {foreignKey: {name: "userId", allowNull: false}, targetKey: "id"})
-
-Answer.hasMany(Vote, {foreignKey: {name: "answerId", allowNull: false}, sourceKey: "id"})
-Vote.belongsTo(Answer, {foreignKey: {name: "questionId", allowNull: false}, targetKey: "id"})
-
-Question.hasMany(Subscription, {foreignKey: {name: "questionId", allowNull: false}, sourceKey: "id"})
-Subscription.belongsTo(Question, {foreignKey: {name: "questionId", allowNull: false}, targetKey: "id"})
-
-Question.hasMany(Answer, {foreignKey: {name: "questionId", allowNull: false}, sourceKey: "id"})
-Answer.belongsTo(Question, {foreignKey: {name: "questionId", allowNull: false}, targetKey: "id"})
 

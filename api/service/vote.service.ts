@@ -65,7 +65,7 @@ class VoteService {
 
         return Vote.update({voteType: voteDto.voteType}, {where: {userId: voteDto.userId, answerId: answerId}})
             .then(data => {
-                return { message: "Vote recorded", code: 200}
+                return { message: "User vote updated", code: 200}
             })
             .catch(e => {
                 log('Error: ', e)
