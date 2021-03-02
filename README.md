@@ -27,6 +27,9 @@ Start development server with hot reloading (open `http://localhost:8080/`)
 ## Database Design
 ![plot](./database-model.PNG)
 
+## API Collection
+Postman - https://www.getpostman.com/collections/041f33702a67e8839c25
+
 ## Improvement
 Below are the important improvements to consider
 * Implement a message broker using a pub sub approach for the subscription notification feature. This will be higly considered for scalability and reliability reasons
