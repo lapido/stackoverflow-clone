@@ -36,6 +36,12 @@ test('should register user', async () => {
         password: password
     }
 
+    const user: any = {id: faker.random.number()}
+    const userModel = new Promise<any>((resolve, reject) => {
+      resolve(user);
+    });
+    jest.spyOn(User, 'create').mockRejectedValueOnce(userModel)
+
     await UsersService.register(userDto)
     expect(User.findOne).toHaveBeenCalledTimes(1)
     expect(User.create).toHaveBeenCalledTimes(1)
@@ -62,6 +68,8 @@ test('should not save duplicate', async () => {
     });
 
     jest.spyOn(User, 'findOne').mockResolvedValueOnce(userModel)
+    
+    jest.spyOn(User, 'create').mockRejectedValueOnce(null)
     
     await UsersService.register(userDto)
     expect(User.findOne).toHaveBeenCalledTimes(1)

@@ -39,7 +39,7 @@ test('should create answer', async () => {
 
     const answer: any = {id: faker.random.number()}
     const answerModel = new Promise<any>((resolve, reject) => {
-      resolve(answerModel);
+      resolve(answer);
     });
     jest.spyOn(Answer, 'create').mockRejectedValueOnce(answerModel)
 

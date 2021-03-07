@@ -6,11 +6,13 @@ import QuestionService from '../../api/service/question.service'
 import * as PaginationUtil from '../../api/service/util/pagination.util'
 
 jest.mock('../../api/model/question.model')
+jest.mock('../../api/model/user.model')
 
 afterEach(() => {
     jest.clearAllMocks()
   })
 jest.setTimeout(30000);
+
 test('should create question', async () => {
     const title = faker.lorem.lines()
     const body = faker.lorem.paragraph()
